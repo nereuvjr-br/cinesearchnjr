@@ -4,6 +4,7 @@ import { ArrowLeft, Play, Clock, Calendar } from "lucide-react";
 import { getMovie, imgUrl } from "@/lib/tmdb";
 import RatingBadge from "@/components/RatingBadge";
 import ProviderList from "@/components/ProviderList";
+import InteractionButtons from "@/components/InteractionButtons";
 import { Button } from "@/components/ui/button";
 
 const MovieDetail = () => {
