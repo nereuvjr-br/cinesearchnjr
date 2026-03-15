@@ -1,6 +1,7 @@
 import { Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { imgUrl, type TMDBSearchItem } from "@/lib/tmdb";
+import InteractionButtons from "./InteractionButtons";
 
 interface MediaCardProps {
   item: TMDBSearchItem;
@@ -16,9 +17,9 @@ const MediaCard = ({ item }: MediaCardProps) => {
   return (
     <Link
       to={`/${type}/${item.id}`}
-      className="group block glass-card overflow-hidden transition-all duration-300 hover:scale-[1.03] hover:glow-border"
+      className="group block glass-card overflow-hidden transition-all duration-300 hover:scale-[1.03] hover:glow-border relative"
     >
-      <div className="aspect-[2/3] overflow-hidden bg-muted">
+      <div className="aspect-[2/3] overflow-hidden bg-muted relative">
         {poster ? (
           <img
             src={poster}
@@ -31,6 +32,9 @@ const MediaCard = ({ item }: MediaCardProps) => {
             Sem imagem
           </div>
         )}
+        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <InteractionButtons tmdbId={item.id} mediaType={type as "movie" | "tv"} />
+        </div>
       </div>
       <div className="p-3 space-y-1">
         <h3 className="font-display font-semibold text-sm leading-tight line-clamp-2 text-foreground">

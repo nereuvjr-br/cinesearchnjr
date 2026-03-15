@@ -5,6 +5,7 @@ import { ArrowLeft, Play, Calendar, Tv, Info, ChevronDown, ChevronUp } from "luc
 import { getTVShow, getTVSeason, imgUrl } from "@/lib/tmdb";
 import RatingBadge from "@/components/RatingBadge";
 import ProviderList from "@/components/ProviderList";
+import InteractionButtons from "@/components/InteractionButtons";
 import { Button } from "@/components/ui/button";
 
 const TVDetail = () => {
@@ -63,7 +64,10 @@ const TVDetail = () => {
           )}
 
           <div className="flex-1 space-y-5">
-            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground">{show.name}</h1>
+            <div className="flex items-center gap-4">
+              <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground">{show.name}</h1>
+              <InteractionButtons tmdbId={show.id} mediaType="tv" size="md" />
+            </div>
 
             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
               <RatingBadge rating={show.vote_average} />

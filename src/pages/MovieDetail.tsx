@@ -4,6 +4,7 @@ import { ArrowLeft, Play, Clock, Calendar } from "lucide-react";
 import { getMovie, imgUrl } from "@/lib/tmdb";
 import RatingBadge from "@/components/RatingBadge";
 import ProviderList from "@/components/ProviderList";
+import InteractionButtons from "@/components/InteractionButtons";
 import { Button } from "@/components/ui/button";
 
 const MovieDetail = () => {
@@ -50,7 +51,10 @@ const MovieDetail = () => {
 
           {/* Info */}
           <div className="flex-1 space-y-5">
-            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground">{movie.title}</h1>
+            <div className="flex items-center gap-4">
+              <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground">{movie.title}</h1>
+              <InteractionButtons tmdbId={movie.id} mediaType="movie" size="md" />
+            </div>
 
             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
               <RatingBadge rating={movie.vote_average} />
