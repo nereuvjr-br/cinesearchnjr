@@ -81,3 +81,19 @@ export function useUserInteractions(type: "favorite" | "watched") {
     enabled: !!user,
   });
 }
+
+export function useUserInteractionsById(userId: string, type: "favorite" | "watched") {
+  return useQuery({
+    queryKey: ["interactions", userId, type],
+    queryFn: async () => {
+      const column = type === "favorite" ? "is_favorite" : "is_watched";
+      const { data } = await supabase
+        .from("user_interactions")
+        .select("*")
+        .eq("user_id", userId)
+        .eq(column, true);
+      return data || [];
+    },
+    enabled: !!userId,
+  });
+}
