@@ -217,6 +217,9 @@ const TVDetail = () => {
                 </div>
               </div>
             )}
+
+            {/* Comments */}
+            <CommentsSection tmdbId={show.id} mediaType="tv" />
           </div>
         </div>
       </div>

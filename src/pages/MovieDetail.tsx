@@ -123,6 +123,9 @@ const MovieDetail = () => {
                 </div>
               </div>
             )}
+
+            {/* Comments */}
+            <CommentsSection tmdbId={movie.id} mediaType="movie" />
           </div>
         </div>
       </div>
