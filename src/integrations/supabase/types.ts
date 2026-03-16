@@ -14,6 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
+      comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          media_type: string | null
+          profile_user_id: string | null
+          tmdb_id: number | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          media_type?: string | null
+          profile_user_id?: string | null
+          tmdb_id?: number | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          media_type?: string | null
+          profile_user_id?: string | null
+          tmdb_id?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      follows: {
+        Row: {
+          created_at: string
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      missions: {
+        Row: {
+          created_at: string
+          description: string
+          genre_id: number | null
+          id: string
+          target_count: number
+          target_type: string
+          title: string
+          type: string
+          xp_reward: number
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          genre_id?: number | null
+          id?: string
+          target_count?: number
+          target_type: string
+          title: string
+          type: string
+          xp_reward?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          genre_id?: number | null
+          id?: string
+          target_count?: number
+          target_type?: string
+          title?: string
+          type?: string
+          xp_reward?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -70,6 +157,44 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_missions: {
+        Row: {
+          assigned_at: string
+          completed: boolean
+          completed_at: string | null
+          id: string
+          mission_id: string
+          progress: number
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          completed?: boolean
+          completed_at?: string | null
+          id?: string
+          mission_id: string
+          progress?: number
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string
+          completed?: boolean
+          completed_at?: string | null
+          id?: string
+          mission_id?: string
+          progress?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_missions_mission_id_fkey"
+            columns: ["mission_id"]
+            isOneToOne: false
+            referencedRelation: "missions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
