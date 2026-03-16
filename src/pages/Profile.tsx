@@ -1,14 +1,17 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { LogOut, Heart, Eye, Trophy } from "lucide-react";
+import { LogOut, Heart, Eye, Trophy, Users, UserPlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { xpForNextLevel } from "@/lib/gamification";
 import { searchMulti } from "@/lib/tmdb";
 import { useUserInteractions } from "@/hooks/useInteractions";
+import { useFollowCounts } from "@/hooks/useFollow";
 import Header from "@/components/Header";
 import MediaCard from "@/components/MediaCard";
+import MissionsPanel from "@/components/MissionsPanel";
+import CommentsSection from "@/components/CommentsSection";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 
@@ -40,10 +43,10 @@ const Profile = () => {
     enabled: !!user,
   });
 
+  const { followers, following } = useFollowCounts(user?.id || "");
   const { data: favorites } = useUserInteractions("favorite");
   const { data: watched } = useUserInteractions("watched");
 
-  // Fetch TMDB data for favorites
   const { data: favItems } = useQuery({
     queryKey: ["fav-tmdb", favorites?.map((f) => f.tmdb_id)],
     queryFn: async () => {
@@ -51,8 +54,7 @@ const Profile = () => {
       const results = await Promise.all(
         favorites.map(async (f) => {
           const res = await searchMulti(f.tmdb_id.toString());
-          const match = res.results.find((r: any) => r.id === f.tmdb_id);
-          return match || null;
+          return res.results.find((r: any) => r.id === f.tmdb_id) || null;
         })
       );
       return results.filter(Boolean);
@@ -67,8 +69,7 @@ const Profile = () => {
       const results = await Promise.all(
         watched.map(async (w) => {
           const res = await searchMulti(w.tmdb_id.toString());
-          const match = res.results.find((r: any) => r.id === w.tmdb_id);
-          return match || null;
+          return res.results.find((r: any) => r.id === w.tmdb_id) || null;
         })
       );
       return results.filter(Boolean);
@@ -76,7 +77,6 @@ const Profile = () => {
     enabled: !!watched?.length,
   });
 
-  // Calculate genre badges from watched items
   const genreCounts: Record<number, number> = {};
   watchedItems?.forEach((item: any) => {
     item.genre_ids?.forEach((gid: number) => {
@@ -109,6 +109,14 @@ const Profile = () => {
               </span>
               <span className="text-sm text-muted-foreground">{profile.xp} XP total</span>
             </div>
+            <div className="flex items-center gap-4 justify-center sm:justify-start text-sm text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <Users className="h-4 w-4" /> {followers} seguidores
+              </span>
+              <span className="flex items-center gap-1">
+                <UserPlus className="h-4 w-4" /> {following} seguindo
+              </span>
+            </div>
             <div className="max-w-xs">
               <div className="flex justify-between text-xs text-muted-foreground mb-1">
                 <span>{xpInfo.current} / {xpInfo.needed} XP</span>
@@ -139,10 +147,13 @@ const Profile = () => {
           </div>
         )}
 
+        {/* Missions */}
+        <MissionsPanel />
+
         {/* Favorites */}
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <Heart className="h-5 w-5 text-red-500" />
+            <Heart className="h-5 w-5 text-destructive" />
             <h2 className="font-display text-lg font-semibold text-foreground">
               Favoritos ({favorites?.length || 0})
             </h2>
@@ -176,6 +187,9 @@ const Profile = () => {
             <p className="text-muted-foreground text-sm">Nenhum item assistido ainda.</p>
           )}
         </div>
+
+        {/* Profile comments */}
+        <CommentsSection profileUserId={user.id} />
       </main>
     </div>
   );
