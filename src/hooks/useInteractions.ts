@@ -48,9 +48,27 @@ export function useInteraction(tmdbId: number, mediaType: "movie" | "tv") {
 
       if (update.is_favorite !== undefined) {
         await updateXP(user!.id, update.is_favorite ? XP_FAVORITE : -XP_FAVORITE);
+        if (update.is_favorite) {
+          const { checkAndUpdateMissions } = await import("./useMissions");
+          const { count } = await supabase
+            .from("user_interactions")
+            .select("*", { count: "exact", head: true })
+            .eq("user_id", user!.id)
+            .eq("is_favorite", true);
+          await checkAndUpdateMissions(user!.id, "favorite", count || 0);
+        }
       }
       if (update.is_watched !== undefined) {
         await updateXP(user!.id, update.is_watched ? XP_WATCHED : -XP_WATCHED);
+        if (update.is_watched) {
+          const { checkAndUpdateMissions } = await import("./useMissions");
+          const { count } = await supabase
+            .from("user_interactions")
+            .select("*", { count: "exact", head: true })
+            .eq("user_id", user!.id)
+            .eq("is_watched", true);
+          await checkAndUpdateMissions(user!.id, "watched", count || 0);
+        }
       }
     },
   });
