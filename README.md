@@ -1,73 +1,93 @@
-# Welcome to your Lovable project
+🎬 CineSearchNJR
 
-## Project info
+Projeto Integrador II - Unifacisa (2026.1) Competência: 222015 - PROJETO INTEGRADOR II - NOITE
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+Metodologia: Vibe Coding (Desenvolvimento assistido por IA)
 
-## How can I edit this code?
+📌 1. Definição do Problema
 
-There are several ways of editing your application.
+Atualmente, os entusiastas de cinema e séries enfrentam dois grandes obstáculos: a "Paralisia da Escolha", causada pela fragmentação de conteúdos em diversas plataformas de streaming, e o Baixo Engajamento Social, onde a experiência de assistir torna-se passiva e solitária. O CineSearchNJR surge para centralizar a busca de onde assistir e transformar a visualização em uma experiência activa e gratificante.
 
-**Use Lovable**
+🎯 2. Proposta de Valor
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+O CineSearchNJR oferece um ecossistema completo que une a precisão de dados do TMDB, recomendações inteligentes via IA (Gemini) e um sistema de gamificação profundo (XP, Níveis e Missões). O diferencial está em recompensar o utilizador por cada interacção, criando uma rede social vibrante para cinéfilos.
 
-Changes made via Lovable will be committed automatically to this repo.
+👥 3. Personas (Desenvolvidas com IA)
 
-**Use your preferred IDE**
+Marcos (O Platinador): Estudante de 22 anos que adora sistemas de ranking. O seu objectivo é completar todas as missões semanais para ser o Top 1 do ranking global.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Julia (A Pragmática): Trabalha em regime remoto e tem pouco tempo. Utiliza o CineSearch para decidir rapidamente o que assistir com base nas recomendações da IA e saber em qual streaming o filme está disponível.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Ricardo (O Crítico Social): Cinéfilo que gosta de debater. Procura a plataforma para seguir outros utilizadores, ler comentários e partilhar as suas próprias listas.
 
-Follow these steps:
+🛠️ 4. Lista de Funcionalidades (MVP)
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+Core & Interface
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+Busca em Tempo Real: Filtros inteligentes para filmes, séries e equipas técnicas via TMDB.
 
-# Step 3: Install the necessary dependencies.
-npm i
+Onde Assistir (Watch Providers): Integração com dados de disponibilidade de streaming no Brasil.
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+Interface Futurista: Design responsivo construído com Tailwind CSS e Shadcn UI.
 
-**Edit a file directly in GitHub**
+Gamificação e Social
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Motor de XP: Ganho de experiência ao favoritar (+10 XP) e marcar como assistido (+50 XP).
 
-**Use GitHub Codespaces**
+Sistema de Níveis: Progressão automática com barra de progresso visual.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Ranking Público: Leaderboard dos Top 50 utilizadores por nível e medalhas.
 
-## What technologies are used for this project?
+Rede Social: Sistema de "Seguir/Seguidores" e secção de comentários em todos os títulos.
 
-This project is built with:
+Missões: Desafios diários, de progresso e de exploração que bonificam o utilizador com XP.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Inteligência Artificial
 
-## How can I deploy this project?
+Recomendações Personalizadas: Algoritmo via Supabase Edge Functions que analisa os últimos 5 favoritos e sugere novos títulos usando o modelo Gemini.
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+🤖 5. Metodologia Vibe Coding
 
-## Can I connect a custom domain to my Lovable project?
+Este projeto foi desenvolvido utilizando o paradigma de Vibe Coding através da ferramenta Lovable.dev. O papel do desenvolvedor foi o de Arquitecto de Prompts, direcionando a IA para a construção de uma lógica complexa de persistência e gamificação.
 
-Yes, you can!
+Prompts Estratégicos Utilizados:
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Fundação e Dados: "Crie um app usando a API do TMDB onde se pesquisa filmes e series... as informacoes precisam ser práticas: Sinopse, Nota, trailers, streaming onde ele esta, temporadas e status."
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Evolução da Arquitetura (Supabase): "CineSearch Evolution: Implementa sistema de login/registo com Supabase Auth. Cria tabelas de profiles e user_interactions. Adiciona botões de Favoritar/Assistir no MediaCard com mutações do TanStack Query."
+
+Refinamento de Gamificação e Social: "Precisa melhorar a gamificacao... implementar sistema de missoes, ranking publico, poder um usuario seguir o outro e sistema de comentarios. As recomendacoes devem ser baseadas no que foi assistido e favoritadas."
+
+⚠️ 6. Status Atual e Limitações Técnicas
+
+O CineSearchNJR encontra-se em estado de MVP funcional. É importante ressaltar que o projeto ainda possui funcionalidades em fase de refinamento.
+
+O desenvolvimento foi impactado pelas limitações de quotas de prompts e processamento da ferramenta Lovable.dev. Devido a esses limites operacionais da plataforma de IA, algumas iterações complexas de interface e polimento de regras de negócio sociais estão agendadas para as próximas fases, à medida que a orquestração do código é otimizada manualmente. Contudo, o fluxo principal (Busca, Auth, XP e IA) está totalmente operacional.
+
+📂 7. Organização do Repositório
+
+/src/components: Componentes modulares e UI (Shadcn).
+
+/src/lib: Lógica de integração com TMDB e motor de gamificação.
+
+/src/hooks: Hooks personalizados para interacções e missões.
+
+/src/pages: Estrutura de rotas (Index, Ranking, Profile, Missions).
+
+/supabase: Migrações SQL e Edge Functions para recomendações de IA.
+
+🚀 8. Stack Tecnológica
+
+Frontend: React, TypeScript, Vite.
+
+Estilização: Tailwind CSS, Shadcn UI, Sonner (Toasts).
+
+Backend & DB: Supabase (Auth, PostgreSQL, RLS).
+
+Gerenciamento de Estado: TanStack Query (React Query).
+
+IA: Google Gemini (via Edge Functions).
+
+Desenvolvido por: Nereu Jr.
+
+Entrega referente à Fase 1 do Projeto Integrador II - Unifacisa.
