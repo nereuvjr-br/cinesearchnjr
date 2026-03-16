@@ -6,6 +6,7 @@ import { getTVShow, getTVSeason, imgUrl } from "@/lib/tmdb";
 import RatingBadge from "@/components/RatingBadge";
 import ProviderList from "@/components/ProviderList";
 import InteractionButtons from "@/components/InteractionButtons";
+import CommentsSection from "@/components/CommentsSection";
 import { Button } from "@/components/ui/button";
 
 const TVDetail = () => {
@@ -216,6 +217,9 @@ const TVDetail = () => {
                 </div>
               </div>
             )}
+
+            {/* Comments */}
+            <CommentsSection tmdbId={show.id} mediaType="tv" />
           </div>
         </div>
       </div>

@@ -1,58 +1,42 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { LogOut, Heart, Eye, Trophy, Users, UserPlus } from "lucide-react";
+import { Heart, Eye, Users, UserPlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useFollow, useFollowCounts } from "@/hooks/useFollow";
+import { useUserInteractionsById } from "@/hooks/useInteractions";
 import { xpForNextLevel } from "@/lib/gamification";
 import { searchMulti } from "@/lib/tmdb";
-import { useUserInteractions } from "@/hooks/useInteractions";
-import { useFollowCounts } from "@/hooks/useFollow";
 import Header from "@/components/Header";
 import MediaCard from "@/components/MediaCard";
-import MissionsPanel from "@/components/MissionsPanel";
 import CommentsSection from "@/components/CommentsSection";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 
-const GENRE_BADGES: Record<number, { name: string; label: string }> = {
-  28: { name: "action", label: "🎬 Fã de Ação" },
-  35: { name: "comedy", label: "😂 Fã de Comédia" },
-  27: { name: "horror", label: "👻 Fã de Terror" },
-  878: { name: "scifi", label: "🚀 Fã de Sci-Fi" },
-  10749: { name: "romance", label: "💕 Fã de Romance" },
-  18: { name: "drama", label: "🎭 Fã de Drama" },
-  16: { name: "animation", label: "✨ Fã de Animação" },
-  53: { name: "thriller", label: "🔪 Fã de Thriller" },
-};
-
-const Profile = () => {
-  const { user, signOut, loading: authLoading } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!authLoading && !user) navigate("/auth");
-  }, [user, authLoading, navigate]);
+const UserProfile = () => {
+  const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
+  const { isFollowing, toggleFollow } = useFollow(id!);
+  const { followers, following } = useFollowCounts(id!);
 
   const { data: profile } = useQuery({
-    queryKey: ["profile", user?.id],
+    queryKey: ["profile", id],
     queryFn: async () => {
-      const { data } = await supabase.from("profiles").select("*").eq("id", user!.id).single();
+      const { data } = await supabase.from("profiles").select("*").eq("id", id!).single();
       return data;
     },
-    enabled: !!user,
+    enabled: !!id,
   });
 
-  const { followers, following } = useFollowCounts(user?.id || "");
-  const { data: favorites } = useUserInteractions("favorite");
-  const { data: watched } = useUserInteractions("watched");
+  const { data: favorites } = useUserInteractionsById(id!, "favorite");
+  const { data: watched } = useUserInteractionsById(id!, "watched");
 
   const { data: favItems } = useQuery({
-    queryKey: ["fav-tmdb", favorites?.map((f) => f.tmdb_id)],
+    queryKey: ["fav-tmdb-user", id, favorites?.map((f: any) => f.tmdb_id)],
     queryFn: async () => {
       if (!favorites?.length) return [];
       const results = await Promise.all(
-        favorites.map(async (f) => {
+        favorites.slice(0, 12).map(async (f: any) => {
           const res = await searchMulti(f.tmdb_id.toString());
           return res.results.find((r: any) => r.id === f.tmdb_id) || null;
         })
@@ -63,11 +47,11 @@ const Profile = () => {
   });
 
   const { data: watchedItems } = useQuery({
-    queryKey: ["watched-tmdb", watched?.map((w) => w.tmdb_id)],
+    queryKey: ["watched-tmdb-user", id, watched?.map((w: any) => w.tmdb_id)],
     queryFn: async () => {
       if (!watched?.length) return [];
       const results = await Promise.all(
-        watched.map(async (w) => {
+        watched.slice(0, 12).map(async (w: any) => {
           const res = await searchMulti(w.tmdb_id.toString());
           return res.results.find((r: any) => r.id === w.tmdb_id) || null;
         })
@@ -77,19 +61,10 @@ const Profile = () => {
     enabled: !!watched?.length,
   });
 
-  const genreCounts: Record<number, number> = {};
-  watchedItems?.forEach((item: any) => {
-    item.genre_ids?.forEach((gid: number) => {
-      genreCounts[gid] = (genreCounts[gid] || 0) + 1;
-    });
-  });
-  const earnedBadges = Object.entries(GENRE_BADGES).filter(
-    ([gid]) => (genreCounts[Number(gid)] || 0) >= 5
-  );
-
-  if (!user || !profile) return null;
+  if (!profile) return null;
 
   const xpInfo = xpForNextLevel(profile.xp);
+  const isMe = user?.id === id;
 
   return (
     <div className="min-h-screen">
@@ -107,7 +82,7 @@ const Profile = () => {
               <span className="text-sm font-bold bg-primary text-primary-foreground px-3 py-1 rounded-full">
                 Nível {profile.level}
               </span>
-              <span className="text-sm text-muted-foreground">{profile.xp} XP total</span>
+              <span className="text-sm text-muted-foreground">{profile.xp} XP</span>
             </div>
             <div className="flex items-center gap-4 justify-center sm:justify-start text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
@@ -118,54 +93,30 @@ const Profile = () => {
               </span>
             </div>
             <div className="max-w-xs">
-              <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                <span>{xpInfo.current} / {xpInfo.needed} XP</span>
-                <span>Próximo nível</span>
-              </div>
               <Progress value={(xpInfo.current / xpInfo.needed) * 100} className="h-2" />
             </div>
           </div>
-          <Button variant="outline" size="sm" onClick={signOut}>
-            <LogOut className="h-4 w-4" /> Sair
-          </Button>
+          {user && !isMe && (
+            <Button variant={isFollowing ? "outline" : "default"} onClick={toggleFollow}>
+              {isFollowing ? "Seguindo" : "Seguir"}
+            </Button>
+          )}
         </div>
-
-        {/* Achievements */}
-        {earnedBadges.length > 0 && (
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Trophy className="h-5 w-5 text-primary" />
-              <h2 className="font-display text-lg font-semibold text-foreground">Conquistas</h2>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {earnedBadges.map(([, badge]) => (
-                <span key={badge.name} className="text-sm px-3 py-1.5 rounded-full bg-primary/10 text-primary font-medium">
-                  {badge.label}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Missions */}
-        <MissionsPanel />
 
         {/* Favorites */}
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <Heart className="h-5 w-5 text-destructive" />
+            <Heart className="h-5 w-5 text-red-500" />
             <h2 className="font-display text-lg font-semibold text-foreground">
               Favoritos ({favorites?.length || 0})
             </h2>
           </div>
           {favItems?.length ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-              {favItems.map((item: any) => (
-                <MediaCard key={item.id} item={item} />
-              ))}
+              {favItems.map((item: any) => <MediaCard key={item.id} item={item} />)}
             </div>
           ) : (
-            <p className="text-muted-foreground text-sm">Nenhum favorito ainda.</p>
+            <p className="text-muted-foreground text-sm">Nenhum favorito.</p>
           )}
         </div>
 
@@ -179,20 +130,18 @@ const Profile = () => {
           </div>
           {watchedItems?.length ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-              {watchedItems.map((item: any) => (
-                <MediaCard key={item.id} item={item} />
-              ))}
+              {watchedItems.map((item: any) => <MediaCard key={item.id} item={item} />)}
             </div>
           ) : (
-            <p className="text-muted-foreground text-sm">Nenhum item assistido ainda.</p>
+            <p className="text-muted-foreground text-sm">Nenhum item assistido.</p>
           )}
         </div>
 
-        {/* Profile comments */}
-        <CommentsSection profileUserId={user.id} />
+        {/* Comments on profile */}
+        <CommentsSection profileUserId={id} />
       </main>
     </div>
   );
 };
 
-export default Profile;
+export default UserProfile;

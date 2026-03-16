@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Film, LogIn, User } from "lucide-react";
+import { Film, LogIn, User, Trophy, Target } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
@@ -49,7 +49,17 @@ const Header = ({ query = "", onQueryChange, showSearch = true }: HeaderProps) =
           </div>
         )}
 
-        <div className="shrink-0 ml-auto">
+        <div className="shrink-0 ml-auto flex items-center gap-2">
+          <Link to="/ranking" className="p-2 rounded-lg hover:bg-secondary transition-colors" title="Ranking">
+            <Trophy className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
+          </Link>
+
+          {user && (
+            <Link to="/missions" className="p-2 rounded-lg hover:bg-secondary transition-colors" title="Missões">
+              <Target className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
+            </Link>
+          )}
+
           {user ? (
             <Link to="/profile" className="flex items-center gap-2 group">
               <div className="flex items-center gap-2 glass-card px-3 py-1.5 transition-all group-hover:glow-border">

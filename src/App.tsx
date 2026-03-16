@@ -9,6 +9,9 @@ import MovieDetail from "./pages/MovieDetail.tsx";
 import TVDetail from "./pages/TVDetail.tsx";
 import Auth from "./pages/Auth.tsx";
 import Profile from "./pages/Profile.tsx";
+import UserProfile from "./pages/UserProfile.tsx";
+import Ranking from "./pages/Ranking.tsx";
+import Missions from "./pages/Missions.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -24,6 +27,9 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/user/:id" element={<UserProfile />} />
+            <Route path="/ranking" element={<Ranking />} />
+            <Route path="/missions" element={<Missions />} />
             <Route path="/movie/:id" element={<MovieDetail />} />
             <Route path="/tv/:id" element={<TVDetail />} />
             <Route path="*" element={<NotFound />} />

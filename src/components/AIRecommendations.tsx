@@ -9,15 +9,20 @@ import MediaCard from "./MediaCard";
 const AIRecommendations = () => {
   const { user } = useAuth();
   const { data: favorites } = useUserInteractions("favorite");
+  const { data: watched } = useUserInteractions("watched");
+
+  const allInteractions = [
+    ...(favorites?.slice(0, 3) || []),
+    ...(watched?.slice(0, 3) || []),
+  ];
 
   const { data: recommendations, isLoading } = useQuery({
-    queryKey: ["ai-recommendations", favorites?.slice(0, 5).map((f) => f.tmdb_id)],
+    queryKey: ["ai-recommendations", allInteractions.map((f) => f.tmdb_id)],
     queryFn: async () => {
-      if (!favorites?.length) return [];
+      if (!allInteractions.length) return [];
 
-      // Get titles from TMDB for favorites
       const titles = await Promise.all(
-        favorites.slice(0, 5).map(async (f) => {
+        allInteractions.map(async (f) => {
           const res = await searchMulti(f.tmdb_id.toString());
           const match = res.results.find((r: any) => r.id === f.tmdb_id);
           return match?.title || match?.name || null;
@@ -31,22 +36,22 @@ const AIRecommendations = () => {
       });
       if (error) throw error;
 
-      // Map AI suggestions back to TMDB
+      const allIds = [...(favorites || []), ...(watched || [])].map((i) => i.tmdb_id);
       const suggestions: TMDBSearchItem[] = [];
       for (const title of data.recommendations || []) {
         const res = await searchMulti(title);
         const match = res.results.find(
-          (r: any) => r.media_type !== "person" && !favorites?.some((f) => f.tmdb_id === r.id)
+          (r: any) => r.media_type !== "person" && !allIds.includes(r.id)
         );
         if (match) suggestions.push(match);
       }
       return suggestions.slice(0, 8);
     },
-    enabled: !!user && !!favorites?.length && favorites.length > 0,
+    enabled: !!user && allInteractions.length > 0,
     staleTime: 1000 * 60 * 10,
   });
 
-  if (!user || !favorites?.length || (!isLoading && !recommendations?.length)) return null;
+  if (!user || !allInteractions.length || (!isLoading && !recommendations?.length)) return null;
 
   return (
     <div className="space-y-4">
